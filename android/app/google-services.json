@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "810488811579",
+    "firebase_url": "https://happyjumping-default-rtdb.firebaseio.com",
+    "project_id": "happyjumping",
+    "storage_bucket": "happyjumping.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:810488811579:android:bbcb2db4bafa5a416acc1e",
+        "android_client_info": {
+          "package_name": "com.example.app_movillll"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD493NiV0as--4-Dej73Hbc_BCXCA0b8b0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:810488811579:android:5bcece4b30ff88466acc1e",
+        "android_client_info": {
+          "package_name": "com.happy.happygame"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD493NiV0as--4-Dej73Hbc_BCXCA0b8b0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
