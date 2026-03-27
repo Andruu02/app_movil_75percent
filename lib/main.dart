@@ -7,6 +7,7 @@ import 'screens/game_one_screen.dart';
 import 'screens/game_two_screen.dart';
 import 'screens/game_three_screen.dart';
 import 'screens/promociones_screen.dart';
+import 'screens/historial_screen.dart';          // ← NUEVO
 import 'screens/select_character_screen.dart';
 import 'screens/select_game_screen.dart';
 
@@ -51,6 +52,7 @@ class HappyJumpingApp extends StatelessWidget {
         '/game2':            (context) => const GameTwoScreen(),
         '/game3':            (context) => const GameThreeScreen(),
         '/promociones':      (context) => const PromocionesScreen(),
+        '/historial':        (context) => const HistorialScreen(),  // ← NUEVO
       },
     );
   }
