@@ -309,7 +309,7 @@ class _PromocionesScreenState extends State<PromocionesScreen> {
                 children: [
                   const Text('⭐ Mis puntos: ',
                       style: TextStyle(
-                          fontSize: 18, color: Colors.white, fontWeight: FontWeight.w500)),
+                          fontSize: 20, color: Colors.white, fontWeight: FontWeight.w500)),
                   _cargandoPuntos
                       ? const SizedBox(
                           width: 20, height: 20,
@@ -376,20 +376,20 @@ class _PromocionesScreenState extends State<PromocionesScreen> {
                                   children: [
                                     Text(promo.nombre,
                                         style: const TextStyle(
-                                            fontSize: 16,
+                                            fontSize: 18,
                                             fontWeight: FontWeight.bold)),
                                     if (promo.descripcion != null &&
                                         promo.descripcion!.isNotEmpty) ...[
                                       const SizedBox(height: 2),
                                       Text(promo.descripcion!,
                                           style: const TextStyle(
-                                              fontSize: 12, color: Colors.grey)),
+                                              fontSize: 22, color: Colors.grey)),
                                     ],
                                     const SizedBox(height: 4),
                                     Text(
                                       '⭐ ${promo.puntosNecesarios} puntos',
                                       style: TextStyle(
-                                          fontSize: 13,
+                                          fontSize: 19,
                                           color: puedesCanjear
                                               ? Colors.deepPurple
                                               : Colors.grey,

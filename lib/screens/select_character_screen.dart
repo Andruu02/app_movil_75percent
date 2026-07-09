@@ -74,7 +74,19 @@ class _SelectCharacterScreenState extends State<SelectCharacterScreen> {
     await prefs.setString('personaje_sprite_catcher_comiendo', p.spriteCatcherComiendo);
     await prefs.setString('personaje_sprite_runner1',          p.spriteRunner1);
     await prefs.setString('personaje_sprite_runner2',          p.spriteRunner2);
-    await prefs.setString('personaje_sprite_bola',             p.spriteBola); // ← nuevo
+    await prefs.setString('personaje_sprite_bola',             p.spriteBola);
+  }
+
+  Widget _buildPreviewPersonaje(PersonajeModel personaje) {
+    return SizedBox(
+      height: 120,
+      child: Image.asset(
+        'assets/images/${personaje.spriteHome}',
+        height: 120,
+        fit: BoxFit.contain,
+        gaplessPlayback: true,
+      ),
+    );
   }
 
   @override
@@ -88,9 +100,7 @@ class _SelectCharacterScreenState extends State<SelectCharacterScreen> {
               children: [
                 // ── HEADER ────────────────────────────────────────────────
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16, vertical: 12,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -135,7 +145,7 @@ class _SelectCharacterScreenState extends State<SelectCharacterScreen> {
                   ),
                 ),
 
-                // ── PERSONAJES ────────────────────────────────────────────
+                // ── GRID DE PERSONAJES ────────────────────────────────────
                 if (_cargando)
                   const Expanded(
                     child: Center(
@@ -144,10 +154,17 @@ class _SelectCharacterScreenState extends State<SelectCharacterScreen> {
                   )
                 else
                   Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: List.generate(_personajes.length, (index) {
+                    child: GridView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount:   2,
+                        mainAxisSpacing:  16,
+                        crossAxisSpacing: 16,
+                        childAspectRatio: 0.80,
+                      ),
+                      itemCount: _personajes.length,
+                      itemBuilder: (context, index) {
                         final personaje  = _personajes[index];
                         final isSelected = index == _personajeIndex;
 
@@ -155,28 +172,37 @@ class _SelectCharacterScreenState extends State<SelectCharacterScreen> {
                           onTap: () => _seleccionarPersonaje(index),
                           child: AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
-                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               color: isSelected
                                   ? Colors.black.withOpacity(0.15)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(16),
+                                  : Colors.black.withOpacity(0.05),
+                              borderRadius: BorderRadius.circular(20),
                               border: isSelected
                                   ? Border.all(color: Colors.white, width: 3)
-                                  : null,
+                                  : Border.all(color: Colors.transparent, width: 3),
                             ),
-                            child: Image.asset(
-                              'assets/images/${personaje.spriteHome}',
-                              height: 220,
-                              gaplessPlayback: true,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildPreviewPersonaje(personaje),
+                                const SizedBox(height: 6),
+                                Text(
+                                  personaje.nombre,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w800,
+                                    color: isSelected ? Colors.white : Colors.black,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         );
-                      }),
+                      },
                     ),
                   ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 16),
               ],
             ),
 

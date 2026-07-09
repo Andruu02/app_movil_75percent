@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/partida_model.dart';
 import '../utils/api_config.dart';
+import 'api_client.dart';
 
 class PartidaService {
 
@@ -27,10 +27,9 @@ class PartidaService {
         puntaje:     puntaje,
       );
 
-      final response = await http.post(
-        Uri.parse(ApiConfig.partidas),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode(partida.toJson()),
+      final response = await ApiClient.post(
+        ApiConfig.partidas,
+        body: partida.toJson(),
       );
 
       final data = jsonDecode(response.body);
@@ -47,8 +46,8 @@ class PartidaService {
       final idUsuario = prefs.getInt('user_id');
       if (idUsuario == null) return 0;
 
-      final response = await http.get(
-        Uri.parse('${ApiConfig.partidas}/puntos/$idUsuario'),
+      final response = await ApiClient.get(
+        '${ApiConfig.partidas}/puntos/$idUsuario',
       );
 
       final data = jsonDecode(response.body);
@@ -72,8 +71,8 @@ class PartidaService {
       final idUsuario = prefs.getInt('user_id');
       if (idUsuario == null) return [];
 
-      final response = await http.get(
-        Uri.parse('${ApiConfig.partidas}/$idUsuario'),
+      final response = await ApiClient.get(
+        '${ApiConfig.partidas}/$idUsuario',
       );
 
       final data = jsonDecode(response.body);

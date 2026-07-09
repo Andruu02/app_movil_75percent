@@ -63,7 +63,7 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     super.update(dt);
 
     if (gameSpeed < maxGameSpeed) gameSpeed += speedIncreaseRate * dt;
-    _spawnInterval = (_spawnInterval - dt * 0.008).clamp(0.65, 1.8);
+    _spawnInterval = (_spawnInterval - dt * 0.008).clamp(0.6, 1.8);
 
     _spawnTimer += dt;
     if (_spawnTimer >= _spawnInterval) {
@@ -84,7 +84,13 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     }
   }
 
-  void addScore() => scoreNotifier.value++;
+  void addScore() {
+    scoreNotifier.value++;
+    if (scoreNotifier.value % 2 == 0) {
+      gameSpeed = (gameSpeed + 10).clamp(0, maxGameSpeed);
+      _spawnInterval = (_spawnInterval - 0.08).clamp(0.4, 1.8);
+    }
+  }
 
   void triggerGameOver() {
     if (_isGameOver) return;

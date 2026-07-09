@@ -17,24 +17,15 @@ class FallGame extends FlameGame with HasCollisionDetection {
   late FallBallComponent ball;
 
   final ValueNotifier<int> scoreNotifier = ValueNotifier(0);
-  bool _isGameOver = false;
+  bool _isGameOver     = false;
+  bool _platformsReady = false;
 
-  // ════════════════════════════════════════════════════════════════════
-  //  VELOCIDAD DE LAS PLATAFORMAS
-  //  scrollSpeed      = velocidad inicial (px/seg que suben)
-  //  maxScrollSpeed   = velocidad máxima que puede alcanzar
-  //  scrollSpeedIncrease = cuánto aumenta por segundo
-  //
-  //  Sube estos valores para que el juego sea más difícil desde el inicio
-  //  o baja scrollSpeedIncrease para que tarde más en acelerarse.
-  // ════════════════════════════════════════════════════════════════════
-  double scrollSpeed = 80.0;              // ← velocidad inicial
-  static const double maxScrollSpeed       = 260.0; // ← velocidad máxima
-  static const double scrollSpeedIncrease  = 4.0;   // ← aceleración por seg
+  double scrollSpeed = 80.0;
+  static const double maxScrollSpeed      = 260.0;
+  static const double scrollSpeedIncrease = 4.0;
 
-  // ── Generación de plataformas ─────────────────────────────────────
-  static const double platH        = 22.0;
-  static const double platSpacing  = 140.0;
+  static const double platH       = 22.0;
+  static const double platSpacing = 140.0;
   double _spawnTimer    = 0;
   double _spawnInterval = 1.6;
 
@@ -46,21 +37,43 @@ class FallGame extends FlameGame with HasCollisionDetection {
   @override
   Future<void> onLoad() async {
     await images.loadAll([spriteBola]);
-    _spawnInitialPlatforms();
     ball = FallBallComponent(spriteName: spriteBola);
     add(ball);
     overlays.add('hud');
     overlays.add('backButton');
+    overlays.add('pauseButton');
     overlays.add('controls');
   }
 
-  void _spawnInitialPlatforms() {
-    // Primera plataforma a la mitad de pantalla para dar tiempo de reacción
-    double y = size.y - platH;
-    while (y > -platSpacing) {
-      add(FallPlatformComponent(spawnY: y));
-      y -= platSpacing;
+  @override
+  void onGameResize(Vector2 gameSize) {
+    super.onGameResize(gameSize);
+    if (!_platformsReady && gameSize.x > 0 && gameSize.y > 0) {
+      _platformsReady = true;
+      _spawnInitialPlatforms(gameSize);
     }
+  }
+
+  void _spawnInitialPlatforms(Vector2 gameSize) {
+    final List<double> positions = [];
+
+    double y = gameSize.y / 2;
+    while (y <= gameSize.y + platH) {
+      positions.add(y);
+      y += platSpacing;
+    }
+
+    for (final posY in positions) {
+      add(FallPlatformComponent(spawnY: posY));
+    }
+
+    // 👇 El timer arranca negativo para que espere
+    // el tiempo equivalente al espaciado entre plataformas
+    // antes de generar la siguiente, evitando la duplicación
+    final lastY    = positions.last;
+    final distToBottom = gameSize.y + platH - lastY;
+    final timeToBottom = distToBottom / scrollSpeed;
+    _spawnTimer = -timeToBottom;
   }
 
   @override
@@ -79,7 +92,7 @@ class FallGame extends FlameGame with HasCollisionDetection {
       add(FallPlatformComponent(spawnY: size.y + platH));
     }
 
-    // Eliminar plataformas que ya salieron por arriba
+    // Eliminar plataformas que salieron por arriba
     final toRemove = children
         .whereType<FallPlatformComponent>()
         .where((p) => p.position.y < -platH - 10)
@@ -91,8 +104,13 @@ class FallGame extends FlameGame with HasCollisionDetection {
 
     ball.applyTilt(tiltValue, dt);
 
-    // Game over: bola aplastada contra el techo por una plataforma
+    // Game over: bola aplastada contra el techo
     if (ball.position.y - FallBallComponent.radius <= 0) {
+      triggerGameOver();
+    }
+
+    // Game over: bola cae fuera de pantalla por abajo
+    if (ball.position.y - FallBallComponent.radius >= size.y) {
       triggerGameOver();
     }
   }
@@ -112,6 +130,7 @@ class FallGame extends FlameGame with HasCollisionDetection {
     pauseEngine();
     overlays.remove('hud');
     overlays.remove('backButton');
+    overlays.remove('pauseButton');
     overlays.remove('controls');
     overlays.add('gameOver');
   }
@@ -125,12 +144,13 @@ class FallGame extends FlameGame with HasCollisionDetection {
     tiltValue      = 0;
 
     children.whereType<FallPlatformComponent>().toList().forEach(remove);
-    _spawnInitialPlatforms();
+    _spawnInitialPlatforms(size);
     ball.reset();
 
     overlays.remove('gameOver');
     overlays.add('hud');
     overlays.add('backButton');
+    overlays.add('pauseButton');
     overlays.add('controls');
     resumeEngine();
   }

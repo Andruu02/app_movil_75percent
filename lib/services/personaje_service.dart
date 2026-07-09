@@ -1,13 +1,13 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import '../models/personaje_model.dart';
 import '../utils/api_config.dart';
+import 'api_client.dart';
 
 class PersonajeService {
 
   static Future<List<PersonajeModel>> obtenerPersonajes() async {
     try {
-      final response = await http.get(Uri.parse(ApiConfig.personajes));
+      final response = await ApiClient.get(ApiConfig.personajes);
       final data     = jsonDecode(response.body);
 
       if (data['success'] == true) {

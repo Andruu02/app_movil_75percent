@@ -1,8 +1,8 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/codigo_promocion_model.dart';
 import '../utils/api_config.dart';
+import 'api_client.dart';
 
 class CodigoPromocionService {
 
@@ -12,13 +12,12 @@ class CodigoPromocionService {
       final idUsuario = prefs.getInt('user_id');
       if (idUsuario == null) return null;
 
-      final response = await http.post(
-        Uri.parse(ApiConfig.canjearPromocion),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
+      final response = await ApiClient.post(
+        ApiConfig.canjearPromocion,
+        body: {
           'id_usuario':   idUsuario,
           'id_promocion': idPromocion,
-        }),
+        },
       );
 
       final data = jsonDecode(response.body);
@@ -38,8 +37,8 @@ class CodigoPromocionService {
       final idUsuario = prefs.getInt('user_id');
       if (idUsuario == null) return [];
 
-      final response = await http.get(
-        Uri.parse('${ApiConfig.codigosPromocion}/$idUsuario'),
+      final response = await ApiClient.get(
+        '${ApiConfig.codigosPromocion}/$idUsuario',
       );
 
       final data = jsonDecode(response.body);

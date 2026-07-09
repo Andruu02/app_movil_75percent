@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../utils/api_config.dart';
+import 'api_client.dart';
 
 class AuthService {
 
@@ -22,6 +23,12 @@ class AuthService {
         prefs.setInt('user_id',        user.idUsuario);
         prefs.setString('user_nombre', user.nombre);
         prefs.setString('user_correo', user.correo);
+
+        final token = data['token'];
+        if (token != null) {
+          await ApiClient.saveToken(token.toString());
+        }
+
         return user;
       }
 

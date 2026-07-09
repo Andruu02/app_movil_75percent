@@ -149,12 +149,10 @@ class _HistorialScreenState extends State<HistorialScreen> {
                           : Text(
                               '$_puntosActuales',
                               style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.white,
-                                shadows: [
-                                  Shadow(offset: Offset(1, 1), color: Colors.black45)
-                                ],
+                                fontSize: 27,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color.fromARGB(255, 0, 0, 0),
+                                
                               ),
                             ),
                     ],
@@ -174,9 +172,9 @@ class _HistorialScreenState extends State<HistorialScreen> {
               child: Text(
                 'Mis Códigos',
                 style: TextStyle(
-                  fontSize: 22,
+                  fontSize: 27,
                   fontWeight: FontWeight.w900,
-                  color: Colors.white,
+                  color: Color.fromARGB(255, 0, 0, 0),
                   shadows: [Shadow(offset: Offset(1, 1), color: Colors.black38)],
                 ),
               ),
@@ -192,7 +190,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                             'No has canjeado\nninguna promoción aún',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              fontSize: 16,
+                              fontSize: 22,
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
@@ -246,7 +244,7 @@ class _HistorialScreenState extends State<HistorialScreen> {
                                             cod.nombrePromocion ?? 'Promoción',
                                             style: const TextStyle(
                                               color: Colors.white,
-                                              fontSize: 14,
+                                              fontSize: 22,
                                               fontWeight: FontWeight.w600,
                                             ),
                                           ),
