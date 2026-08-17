@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'components/fall_ball_component.dart';
 import 'components/fall_platform_component.dart';
 import '../../services/partida_service.dart';
+import '../../services/sound_manager.dart';
 
 class FallGame extends FlameGame with HasCollisionDetection {
 
@@ -40,9 +41,15 @@ class FallGame extends FlameGame with HasCollisionDetection {
     ball = FallBallComponent(spriteName: spriteBola);
     add(ball);
     overlays.add('hud');
-    overlays.add('backButton');
     overlays.add('pauseButton');
     overlays.add('controls');
+    SoundManager.playMusic('music/bg_fall.mp3', volume: 0.35);
+  }
+
+  @override
+  void onRemove() {
+    SoundManager.playMusic('music/bg_menu.mp3', volume: 0.35);
+    super.onRemove();
   }
 
   @override
@@ -99,6 +106,7 @@ class FallGame extends FlameGame with HasCollisionDetection {
         .toList();
     for (final p in toRemove) {
       scoreNotifier.value++;
+      SoundManager.playSfx('sfx/score.wav', volume: 0.5);
       p.removeFromParent();
     }
 
@@ -117,9 +125,11 @@ class FallGame extends FlameGame with HasCollisionDetection {
 
   void updateTilt(double value) => tiltValue = value.clamp(-1.0, 1.0);
 
-  void triggerGameOver() {
+  void triggerGameOver({bool crash = false}) {
     if (_isGameOver) return;
     _isGameOver = true;
+    SoundManager.playSfx(crash ? 'sfx/crash.ogg' : 'sfx/gameover.wav');
+    SoundManager.stopMusic();
 
     PartidaService.guardarPartida(
       juego:       'fall',
@@ -129,7 +139,6 @@ class FallGame extends FlameGame with HasCollisionDetection {
 
     pauseEngine();
     overlays.remove('hud');
-    overlays.remove('backButton');
     overlays.remove('pauseButton');
     overlays.remove('controls');
     overlays.add('gameOver');
@@ -149,9 +158,9 @@ class FallGame extends FlameGame with HasCollisionDetection {
 
     overlays.remove('gameOver');
     overlays.add('hud');
-    overlays.add('backButton');
     overlays.add('pauseButton');
     overlays.add('controls');
+    SoundManager.playMusic('music/bg_fall.mp3', volume: 0.35);
     resumeEngine();
   }
 }

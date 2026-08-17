@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/partida_service.dart';
+import '../services/sound_manager.dart';
 
 class SelectGameScreen extends StatefulWidget {
   const SelectGameScreen({super.key});
@@ -16,6 +17,7 @@ class _SelectGameScreenState extends State<SelectGameScreen> {
   void initState() {
     super.initState();
     _cargarPuntos();
+    SoundManager.playMusic('music/bg_menu.mp3', volume: 0.35);
   }
 
   Future<void> _cargarPuntos() async {
@@ -79,69 +81,58 @@ class _SelectGameScreenState extends State<SelectGameScreen> {
 
                 // ── TÍTULO ──────────────────────────────────────────────
                 const Padding(
-                  padding: EdgeInsets.only(left: 79, top: 45, bottom: 32),
-                  child: Text(
-                    'Elige un juego',
-                    style: TextStyle(
-                      fontSize: 38,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.black,
+                  padding: EdgeInsets.symmetric(vertical: 8),
+                  child: Center(
+                    child: Text(
+                      'Elige un juego',
+                      style: TextStyle(
+                        fontSize: 34,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.black,
+                      ),
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 100),
-
                 // ── JUEGOS ──────────────────────────────────────────────
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Center(
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Fila 1: Runner (TNT) + Catcher (Sandía)
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Runner → /game1
-                            _GameCard(
-                              imagePath: 'assets/images/tnt.png',
-                              onTap: () async {
-                                await Navigator.pushNamed(context, '/game1');
-                                _cargarPuntos();
-                              },
-                            ),
-
-                            // Catcher → /game2
-                            _GameCard(
-                              imagePath: 'assets/images/sandia.png',
-                              onTap: () async {
-                                await Navigator.pushNamed(context, '/game2');
-                                _cargarPuntos();
-                              },
-                            ),
-                          ],
+                        // Runner → /game1
+                        _GameCard(
+                          imagePath: 'assets/images/tnt.png',
+                          onTap: () async {
+                            await Navigator.pushNamed(context, '/game1');
+                            _cargarPuntos();
+                          },
                         ),
 
-                        const SizedBox(height: 100),
+                        // Catcher → /game2
+                        _GameCard(
+                          imagePath: 'assets/images/sandia.png',
+                          onTap: () async {
+                            await Navigator.pushNamed(context, '/game2');
+                            _cargarPuntos();
+                          },
+                        ),
 
-                        // Fila 2: Fall game (Cactus) → /game3
-                        Row(
-                          children: [
-                            _GameCard(
-                              imagePath: 'assets/images/cactus.png',
-                              onTap: () async {
-                                await Navigator.pushNamed(context, '/game3');
-                                _cargarPuntos();
-                              },
-                            ),
-                          ],
+                        // Fall → /game3
+                        _GameCard(
+                          imagePath: 'assets/images/cactus.png',
+                          onTap: () async {
+                            await Navigator.pushNamed(context, '/game3');
+                            _cargarPuntos();
+                          },
                         ),
                       ],
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 40),
+                const SizedBox(height: 24),
               ],
             ),
 
@@ -173,8 +164,8 @@ class _GameCard extends StatelessWidget {
       onTap: onTap,
       child: Image.asset(
         imagePath,
-        height: 130,
-        width: 130,
+        height: 150,
+        width: 150,
         fit: BoxFit.contain,
       ),
     );

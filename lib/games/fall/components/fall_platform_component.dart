@@ -3,6 +3,7 @@ import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 import 'package:flutter/material.dart';
 import '../fall_game.dart';
+import 'fall_cactus_component.dart';
 
 class FallPlatformComponent extends PositionComponent
     with HasGameRef<FallGame> {
@@ -13,6 +14,8 @@ class FallPlatformComponent extends PositionComponent
   static const double gapWidth    = 90.0;
   // Mínimo margen del hueco respecto al borde
   static const double gapMargin   = 20.0;
+  // Probabilidad de que la plataforma tenga un cactus
+  static const double cactusChance = 0.4;
 
   final double spawnY;
 
@@ -50,6 +53,29 @@ class FallPlatformComponent extends PositionComponent
         isSolid:  true,
       ));
     }
+
+    if (_rng.nextDouble() < cactusChance) {
+      _tryAddCactus(rightStart, rightWidth);
+    }
+  }
+
+  // Coloca un cactus junto al borde del hueco, en uno de los dos segmentos
+  // sólidos, elegido al azar entre el izquierdo y el derecho (el que tenga espacio).
+  void _tryAddCactus(double rightStart, double rightWidth) {
+    const minWidth = FallCactusComponent.cactusW + 16;
+
+    final candidates = <double>[]; // offsetX pegado al borde del hueco
+    if (_gapStart >= minWidth) {
+      candidates.add(_gapStart - FallCactusComponent.cactusW);
+    }
+    if (rightWidth >= minWidth) {
+      candidates.add(rightStart);
+    }
+
+    if (candidates.isEmpty) return;
+
+    final offsetX = candidates[_rng.nextInt(candidates.length)];
+    add(FallCactusComponent(offsetX: offsetX));
   }
 
   @override

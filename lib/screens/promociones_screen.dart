@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/promocion_model.dart';
+import '../models/codigo_promocion_model.dart';
 import '../services/promocion_service.dart';
 import '../services/partida_service.dart';
 import '../services/codigo_promocion_service.dart';
@@ -60,6 +62,32 @@ class _PromocionesScreenState extends State<PromocionesScreen> {
             Text(
               'Te quedarán: ${_puntosActuales - promo.puntosNecesarios} puntos',
               style: const TextStyle(color: Colors.grey),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.orange.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.orange.withOpacity(0.4)),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text('⚠️ ', style: TextStyle(fontSize: 14)),
+                  Expanded(
+                    child: Text(
+                      'El código generado tendrá una vigencia de '
+                      '${CodigoPromocionModel.diasVigencia} días. '
+                      'Recuerda canjearlo en el local antes de que venza.',
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.deepOrange,
+                          fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -138,6 +166,18 @@ class _PromocionesScreenState extends State<PromocionesScreen> {
                   textAlign: TextAlign.center,
                   style: TextStyle(color: Colors.grey, fontSize: 13),
                 ),
+                if (codigo.fechaVencimiento != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    'Válido hasta el ${_formatFecha(codigo.fechaVencimiento!)}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.deepOrange,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
               ],
             ),
             actions: [
@@ -176,7 +216,7 @@ class _PromocionesScreenState extends State<PromocionesScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               const Text(
-                '¿Está seguro de que\ndesea salir?',
+                '¿Estás seguro de que\ndesea cerrar sesión?',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 18,
@@ -234,7 +274,19 @@ class _PromocionesScreenState extends State<PromocionesScreen> {
       ),
     );
 
-    if (salir == true && mounted) Navigator.pop(context);
+    if (salir == true && mounted) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      if (mounted) {
+        Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+      }
+    }
+  }
+
+  String _formatFecha(DateTime fecha) {
+    return '${fecha.day.toString().padLeft(2, '0')}/'
+        '${fecha.month.toString().padLeft(2, '0')}/'
+        '${fecha.year}';
   }
 
   void _mostrarSnack(String mensaje, {bool error = false}) {

@@ -7,4 +7,8 @@ class ApiConfig {
   static const String partidas         = '$baseUrl/partidas';
   static const String codigosPromocion = '$baseUrl/codigos-promocion';
   static const String canjearPromocion = '$baseUrl/codigos-promocion/canjear';
+
+  // ⚠️ Placeholder: el backend aún no expone esta ruta. Ajustar cuando el
+  // equipo de backend defina el endpoint real para registrar tokens FCM.
+  static const String registrarDispositivoFcm = '$baseUrl/push/fcm-suscribir';
 }

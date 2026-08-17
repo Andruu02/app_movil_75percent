@@ -2,6 +2,7 @@ import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 import '../runner_game.dart';
 import 'obstacle_component.dart';
+import '../../../services/sound_manager.dart';
 
 class PlayerComponent extends PositionComponent
     with HasGameRef<RunnerGame>, CollisionCallbacks {
@@ -87,6 +88,7 @@ class PlayerComponent extends PositionComponent
       _velocityY   = jumpForce;
       _onGround    = false;
       _fastFalling = false;
+      SoundManager.playSfx('sfx/jump.ogg', volume: 0.6);
       _showAir();
     } else if (!_fastFalling) {
       _fastFalling = true;

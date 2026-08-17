@@ -213,6 +213,27 @@ class _HistorialScreenState extends State<HistorialScreen> {
                             ),
                             itemBuilder: (context, index) {
                               final cod = _codigos[index];
+
+                              // Estado visual: Activo > Vencido > Usado
+                              final vencidoNoUsado =
+                                  !cod.disponible && cod.estaVencido && cod.fechaUso == null;
+                              final String etiqueta;
+                              final Color colorEstado;
+                              final String icono;
+                              if (cod.disponible) {
+                                etiqueta    = 'Activo';
+                                colorEstado = Colors.greenAccent;
+                                icono       = '🎁';
+                              } else if (vencidoNoUsado) {
+                                etiqueta    = 'Vencido';
+                                colorEstado = Colors.redAccent;
+                                icono       = '⏰';
+                              } else {
+                                etiqueta    = 'Usado';
+                                colorEstado = Colors.grey;
+                                icono       = '✅';
+                              }
+
                               return Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 16, vertical: 12),
@@ -222,14 +243,12 @@ class _HistorialScreenState extends State<HistorialScreen> {
                                     Container(
                                       width: 36, height: 36,
                                       decoration: BoxDecoration(
-                                        color: cod.disponible
-                                            ? Colors.deepPurple.withOpacity(0.25)
-                                            : Colors.grey.withOpacity(0.2),
+                                        color: colorEstado.withOpacity(0.2),
                                         shape: BoxShape.circle,
                                       ),
                                       child: Center(
                                         child: Text(
-                                          cod.disponible ? '🎁' : '✅',
+                                          icono,
                                           style: const TextStyle(fontSize: 18),
                                         ),
                                       ),
@@ -268,6 +287,17 @@ class _HistorialScreenState extends State<HistorialScreen> {
                                               fontSize: 11,
                                             ),
                                           ),
+                                          if (cod.disponible && cod.fechaVencimiento != null) ...[
+                                            const SizedBox(height: 2),
+                                            Text(
+                                              'Vence: ${_formatFecha(cod.fechaVencimiento)}',
+                                              style: const TextStyle(
+                                                color: Colors.orangeAccent,
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ],
                                         ],
                                       ),
                                     ),
@@ -276,23 +306,17 @@ class _HistorialScreenState extends State<HistorialScreen> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 8, vertical: 4),
                                       decoration: BoxDecoration(
-                                        color: cod.disponible
-                                            ? Colors.green.withOpacity(0.2)
-                                            : Colors.grey.withOpacity(0.2),
+                                        color: colorEstado.withOpacity(0.2),
                                         borderRadius: BorderRadius.circular(8),
                                         border: Border.all(
-                                          color: cod.disponible
-                                              ? Colors.greenAccent
-                                              : Colors.grey,
+                                          color: colorEstado,
                                           width: 0.8,
                                         ),
                                       ),
                                       child: Text(
-                                        cod.disponible ? 'Activo' : 'Usado',
+                                        etiqueta,
                                         style: TextStyle(
-                                          color: cod.disponible
-                                              ? Colors.greenAccent
-                                              : Colors.grey,
+                                          color: colorEstado,
                                           fontSize: 11,
                                           fontWeight: FontWeight.bold,
                                         ),

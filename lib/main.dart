@@ -12,6 +12,7 @@ import 'screens/historial_screen.dart';          // ← NUEVO
 import 'screens/select_character_screen.dart';
 import 'screens/select_game_screen.dart';
 import 'services/api_client.dart';
+import 'services/sound_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,6 +37,7 @@ void main() async {
   }
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  await SoundManager.init();
   runApp(const HappyJumpingApp());
 }
 

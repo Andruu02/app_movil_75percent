@@ -4,6 +4,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../games/catcher/catcher_game.dart';
+import '../widgets/pause_overlay.dart';
 
 class GameTwoScreen extends StatefulWidget {
   const GameTwoScreen({super.key});
@@ -16,6 +17,7 @@ class _GameTwoScreenState extends State<GameTwoScreen> {
   CatcherGame? _game;
   bool _pausado = false;
   int _inicioTimestamp = 0;
+  String _nombrePersonaje = 'vianne';
 
   @override
   void initState() {
@@ -33,6 +35,7 @@ class _GameTwoScreenState extends State<GameTwoScreen> {
     final nombrePersonaje =
         (prefs.getString('personaje_nombre') ?? 'vianne').toLowerCase();
     setState(() {
+      _nombrePersonaje = nombrePersonaje;
       _game = CatcherGame(
         idPersonaje:    idPersonaje,
         spriteHambre:   '${nombrePersonaje}_hambre.png',
@@ -62,6 +65,7 @@ class _GameTwoScreenState extends State<GameTwoScreen> {
 
   void _reanudar() {
     _game!.resumeEngine();
+    _game!.overlays.remove('pauseScreen');
     setState(() => _pausado = false);
   }
 
@@ -70,8 +74,15 @@ class _GameTwoScreenState extends State<GameTwoScreen> {
       _reanudar();
     } else {
       _game!.pauseEngine();
+      _game!.overlays.add('pauseScreen');
       setState(() => _pausado = true);
     }
+  }
+
+  void _retryFromPause() {
+    _game!.overlays.remove('pauseScreen');
+    _game!.resetGame();
+    setState(() => _pausado = false);
   }
 
   void _mostrarAlerta(String contenido) {
@@ -180,13 +191,6 @@ class _GameTwoScreenState extends State<GameTwoScreen> {
                 Positioned(
                   top: 12, left: 12,
                   child: GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Image.asset('assets/images/house.png', height: 52),
-                  ),
-                ),
-                Positioned(
-                  top: 12, left: 80,
-                  child: GestureDetector(
                     onTap: _togglePausa,
                     child: Image.asset('assets/images/pausa.png', height: 52),
                   ),
@@ -211,67 +215,10 @@ class _GameTwoScreenState extends State<GameTwoScreen> {
           },
 
           'pauseScreen': (context, game) {
-            return DefaultTextStyle(
-              style: const TextStyle(
-                fontFamily: 'Jaro',
-                decoration: TextDecoration.none,
-                color: Colors.white,
-              ),
-              child: Container(
-                width: double.infinity, height: double.infinity,
-                color: Colors.black.withOpacity(0.6),
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'PAUSA',
-                        style: TextStyle(
-                          fontSize: 48, fontWeight: FontWeight.w900,
-                          color: Colors.white, letterSpacing: 4,
-                          fontFamily: 'Jaro', decoration: TextDecoration.none,
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      GestureDetector(
-                        onTap: _reanudar,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-                          decoration: BoxDecoration(
-                            color: const Color.fromRGBO(255, 119, 0, 1),
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: const Text(
-                            'Reanudar',
-                            style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white,
-                              fontFamily: 'Jaro', decoration: TextDecoration.none,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      GestureDetector(
-                        onTap: () => Navigator.pop(context),
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
-                          decoration: BoxDecoration(
-                            color: Colors.white24,
-                            borderRadius: BorderRadius.circular(30),
-                          ),
-                          child: const Text(
-                            'Salir',
-                            style: TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white,
-                              fontFamily: 'Jaro', decoration: TextDecoration.none,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            return PauseOverlay(
+              onResume: _reanudar,
+              onRetry:  _retryFromPause,
+              onExit:   () => Navigator.pop(context),
             );
           },
 
@@ -300,7 +247,7 @@ class _GameTwoScreenState extends State<GameTwoScreen> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Image.asset('assets/images/emoji_cry.png', height: 130),
+                            Image.asset('assets/images/${_nombrePersonaje}_llorando.png', height: 130),
                             const SizedBox(height: 32),
                             const Text(
                               'GAME OVER',

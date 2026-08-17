@@ -2,6 +2,7 @@ import 'package:flame/components.dart';
 import 'package:flame/collisions.dart';
 import '../fall_game.dart';
 import 'fall_platform_component.dart';
+import 'fall_cactus_component.dart';
 
 class FallBallComponent extends PositionComponent
     with HasGameRef<FallGame>, CollisionCallbacks {
@@ -11,7 +12,7 @@ class FallBallComponent extends PositionComponent
   static const double maxLateral  = 260.0;
   static const double gravity     = 700.0;
   static const double maxFallSpd  = 900.0;
-  static const double rotPerPixel = 1.0 / radius;
+  static const double rotPerPixel = 1.8 / radius;
 
   // Spritesheet 870×1120, 3 cols × 4 filas, 10 frames
   static const int    cols   = 3;
@@ -65,6 +66,14 @@ class FallBallComponent extends PositionComponent
     ));
   }
 
+  @override
+  void onCollisionStart(Set<Vector2> points, PositionComponent other) {
+    super.onCollisionStart(points, other);
+    if (other is FallCactusComponent) {
+      gameRef.triggerGameOver(crash: true);
+    }
+  }
+
   void applyTilt(double tilt, double dt) {
     _vx         = tilt * maxLateral;
     final dx    = _vx * dt;
@@ -73,8 +82,12 @@ class FallBallComponent extends PositionComponent
     _ballAngle     += dx * rotPerPixel;
     _anim?.angle    = _ballAngle; // ← ? evita el error si aún no cargó
 
-    if (position.x < radius)                  position.x = radius;
-    if (position.x > gameRef.size.x - radius) position.x = gameRef.size.x - radius;
+    // Wraparound: si sale por completo de un lado, reaparece en el otro.
+    if (position.x + radius < 0) {
+      position.x = gameRef.size.x + radius;
+    } else if (position.x - radius > gameRef.size.x) {
+      position.x = -radius;
+    }
   }
 
   @override

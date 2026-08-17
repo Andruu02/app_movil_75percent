@@ -4,6 +4,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/personaje_model.dart';
 import '../services/personaje_service.dart';
 import '../services/partida_service.dart';
+import '../services/fcm_service.dart';
+import '../services/sound_manager.dart';
 import '../widgets/image_button.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -31,6 +33,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _cargarUsuario();
     _cargarPersonajes();
     _cargarPuntos();
+    FcmService.inicializar();
+    SoundManager.playMusic('music/bg_menu.mp3', volume: 0.35);
 
     // Espera 3 segundos antes de permitir que lleguen notificaciones
     Future.delayed(const Duration(seconds: 3), () {

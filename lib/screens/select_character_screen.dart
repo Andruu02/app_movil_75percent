@@ -78,13 +78,14 @@ class _SelectCharacterScreenState extends State<SelectCharacterScreen> {
   }
 
   Widget _buildPreviewPersonaje(PersonajeModel personaje) {
-    return SizedBox(
-      height: 120,
-      child: Image.asset(
-        'assets/images/${personaje.spriteHome}',
-        height: 120,
-        fit: BoxFit.contain,
-        gaplessPlayback: true,
+    return Expanded(
+      child: SizedBox(
+        width: double.infinity,
+        child: Image.asset(
+          'assets/images/${personaje.spriteHome}',
+          fit: BoxFit.contain,
+          gaplessPlayback: true,
+        ),
       ),
     );
   }
@@ -154,53 +155,73 @@ class _SelectCharacterScreenState extends State<SelectCharacterScreen> {
                   )
                 else
                   Expanded(
-                    child: GridView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount:   2,
-                        mainAxisSpacing:  16,
-                        crossAxisSpacing: 16,
-                        childAspectRatio: 0.80,
-                      ),
-                      itemCount: _personajes.length,
-                      itemBuilder: (context, index) {
-                        final personaje  = _personajes[index];
-                        final isSelected = index == _personajeIndex;
+                    child: Center(
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount:   2,
+                          mainAxisSpacing:  16,
+                          crossAxisSpacing: 16,
+                          childAspectRatio: 0.56,
+                        ),
+                        itemCount: _personajes.length,
+                        itemBuilder: (context, index) {
+                          final personaje  = _personajes[index];
+                          final isSelected = index == _personajeIndex;
 
-                        return GestureDetector(
-                          onTap: () => _seleccionarPersonaje(index),
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? Colors.black.withOpacity(0.15)
-                                  : Colors.black.withOpacity(0.05),
-                              borderRadius: BorderRadius.circular(20),
-                              border: isSelected
-                                  ? Border.all(color: Colors.white, width: 3)
-                                  : Border.all(color: Colors.transparent, width: 3),
-                            ),
+                          return GestureDetector(
+                            onTap: () => _seleccionarPersonaje(index),
                             child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 _buildPreviewPersonaje(personaje),
-                                const SizedBox(height: 6),
-                                Text(
-                                  personaje.nombre,
+                                const SizedBox(height: 8),
+                                AnimatedDefaultTextStyle(
+                                  duration: const Duration(milliseconds: 200),
                                   style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w800,
+                                    fontSize: isSelected ? 22 : 17,
+                                    fontWeight: FontWeight.w900,
                                     color: isSelected ? Colors.white : Colors.black,
                                   ),
+                                  child: Text(personaje.nombre),
                                 ),
                               ],
                             ),
-                          ),
-                        );
-                      },
+                          );
+                        },
+                      ),
                     ),
                   ),
+
+                // ── BOTÓN SELECCIONAR ───────────────────────────────────
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: SizedBox(
+                    width: 220,
+                    height: 52,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurple,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 4,
+                      ),
+                      onPressed: _cargando
+                          ? null
+                          : () async {
+                              await _seleccionarPersonaje(_personajeIndex);
+                              if (context.mounted) Navigator.pop(context);
+                            },
+                      child: const Text(
+                        'Seleccionar',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                ),
 
                 const SizedBox(height: 16),
               ],

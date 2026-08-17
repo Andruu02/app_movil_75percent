@@ -7,6 +7,7 @@ import 'components/obstacle_component.dart';
 import 'components/ground_component.dart';
 import 'components/background_component.dart';
 import '../../services/partida_service.dart';
+import '../../services/sound_manager.dart';
 
 class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
 
@@ -54,7 +55,13 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
     add(player);
 
     overlays.add('score');
-    overlays.add('backButton');
+    SoundManager.playMusic('music/bg_runner.mp3', volume: 0.35);
+  }
+
+  @override
+  void onRemove() {
+    SoundManager.playMusic('music/bg_menu.mp3', volume: 0.35);
+    super.onRemove();
   }
 
   @override
@@ -86,6 +93,7 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
 
   void addScore() {
     scoreNotifier.value++;
+    SoundManager.playSfx('sfx/score.wav', volume: 0.5);
     if (scoreNotifier.value % 2 == 0) {
       gameSpeed = (gameSpeed + 10).clamp(0, maxGameSpeed);
       _spawnInterval = (_spawnInterval - 0.08).clamp(0.4, 1.8);
@@ -95,6 +103,8 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
   void triggerGameOver() {
     if (_isGameOver) return;
     _isGameOver = true;
+    SoundManager.playSfx('sfx/gameover.wav');
+    SoundManager.stopMusic();
 
     PartidaService.guardarPartida(
       juego:       'runner',
@@ -104,7 +114,6 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
 
     pauseEngine();
     overlays.remove('score');
-    overlays.remove('backButton');
     overlays.add('gameOver');
   }
 
@@ -120,7 +129,7 @@ class RunnerGame extends FlameGame with TapCallbacks, HasCollisionDetection {
 
     overlays.remove('gameOver');
     overlays.add('score');
-    overlays.add('backButton');
+    SoundManager.playMusic('music/bg_runner.mp3', volume: 0.35);
     resumeEngine();
   }
 }

@@ -5,6 +5,7 @@ import 'components/catcher_player_component.dart';
 import 'components/falling_object_component.dart';
 import 'components/catcher_ground_component.dart';
 import '../../services/partida_service.dart';
+import '../../services/sound_manager.dart';
 
 enum ObjectType { good, bad }
 
@@ -58,6 +59,13 @@ class CatcherGame extends FlameGame with HasCollisionDetection {
     add(player);
 
     overlays.add('hud');
+    SoundManager.playMusic('music/bg_catcher.mp3', volume: 0.35);
+  }
+
+  @override
+  void onRemove() {
+    SoundManager.playMusic('music/bg_menu.mp3', volume: 0.35);
+    super.onRemove();
   }
 
   @override
@@ -91,9 +99,12 @@ class CatcherGame extends FlameGame with HasCollisionDetection {
 
   void objectCaught(ObjectType type) {
     if (type == ObjectType.bad) {
+      SoundManager.playSfx('sfx/catch_bad.wav');
       triggerGameOver();
     } else {
       scoreNotifier.value++;
+      // TODO: cuando llegue catch_good.* agregarlo a SoundManager y usarlo aquí.
+      SoundManager.playSfx('sfx/score.wav', volume: 0.5);
       player.triggerEating(); // ← cambiar sprite a "comiendo"
     }
   }
@@ -103,6 +114,8 @@ class CatcherGame extends FlameGame with HasCollisionDetection {
   void triggerGameOver() {
     if (_isGameOver) return;
     _isGameOver = true;
+    SoundManager.playSfx('sfx/gameover.wav');
+    SoundManager.stopMusic();
 
     PartidaService.guardarPartida(
       juego:       'catcher',
@@ -125,6 +138,7 @@ class CatcherGame extends FlameGame with HasCollisionDetection {
     player.reset();
     overlays.remove('gameOver');
     overlays.add('hud');
+    SoundManager.playMusic('music/bg_catcher.mp3', volume: 0.35);
     resumeEngine();
   }
 }
