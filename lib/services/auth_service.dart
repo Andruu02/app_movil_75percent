@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_model.dart';
 import '../utils/api_config.dart';
 import 'api_client.dart';
+import 'fcm_service.dart';
 
 class AuthService {
 
@@ -28,6 +29,9 @@ class AuthService {
         if (token != null) {
           await ApiClient.saveToken(token.toString());
         }
+
+        // Reasocia el token FCM del dispositivo con el usuario recién logueado.
+        FcmService.registrarTokenActual();
 
         return user;
       }
